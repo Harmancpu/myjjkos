@@ -387,6 +387,52 @@
     const taskList = document.getElementById('taskList');
     const cityInput = document.getElementById('cityInput');
     const weatherResult = document.getElementById('weatherResult');
+    const TODO_STORAGE_KEY = 'jjkos-tasks';
+    let tasks = [];
+
+    function saveTasks() {
+      localStorage.setItem(TODO_STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      taskList.innerHTML = '';
+      tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.textContent = task.text;
+        li.style.cursor = 'pointer';
+        if (task.done) {
+          li.style.textDecoration = 'line-through';
+          li.style.opacity = '0.6';
+        }
+        li.onclick = () => {
+          tasks[index].done = !tasks[index].done;
+          saveTasks();
+          renderTasks();
+        };
+        taskList.appendChild(li);
+      });
+    }
+
+    function loadTasks() {
+      try {
+        const stored = localStorage.getItem(TODO_STORAGE_KEY);
+        tasks = stored ? JSON.parse(stored) : [];
+      } catch {
+        tasks = [];
+      }
+      renderTasks();
+    }
+
+    function addTask() {
+      const i = taskInput;
+      if (!i.value.trim()) return;
+      tasks.push({ text: i.value.trim(), done: false });
+      saveTasks();
+      renderTasks();
+      i.value = '';
+    }
+
+    loadTasks();
     let progress = 0;
     const b = setInterval(() => {
       progress += 2;
@@ -499,19 +545,6 @@
         el.style.top = (el.offsetTop - y) + 'px';
         el.style.left = (el.offsetLeft - x) + 'px';
       }
-    }
-
-    function addTask() {
-      const i = taskInput;
-      if (!i.value.trim()) return;
-      const li = document.createElement('li');
-      li.textContent = i.value;
-      li.onclick = () => {
-        li.style.textDecoration = 'line-through';
-        li.style.opacity = '0.6';
-      };
-      taskList.appendChild(li);
-      i.value = '';
     }
 
     async function getWeather() {
