@@ -400,12 +400,8 @@
         const li = document.createElement('li');
         li.textContent = task.text;
         li.style.cursor = 'pointer';
-        if (task.done) {
-          li.style.textDecoration = 'line-through';
-          li.style.opacity = '0.6';
-        }
         li.onclick = () => {
-          tasks[index].done = !tasks[index].done;
+          tasks.splice(index, 1);
           saveTasks();
           renderTasks();
         };
